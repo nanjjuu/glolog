@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>글로그 메이커</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAA0VXHyAAADa0lEQVQ4EW1TbWhbVRh+7ldyP5Lmq0l6ky7LiGlTZ2e1ulns5ph2Ax2CwzqmCFP6xw8QBVEQfykDf7mJ+lOKP3RQQRRUJgyHaxnVbdqUJaZd0qw3ab6aj5umyc2S3HhvOvEDXzjnvO97zvPwHJ5zCPxPdLtdvUvcjNSfikcbb1WK7f00Q9T9QfaV8cm+2d4mQegLduZeujPdAeOP6/WnY2HlY5Um3WabAa1OB9tFJXdXiH11bML8VQ+skfQI1mJ1sDwplgqt59GFevf9povfflb4ApQhNBgSUKq0IJgp1AotbJXrsROnnYc1giyhEdBSXIHLw7h+mCudiy0r05p6NZtqLchFeaBaNEIut1FXCewOsGCYFiryugA46R29AG13MeKl7+SzUqIz3efgNEkEee2XxsHEjRXcWpRhsntg9TnB3LZDbiQx6KetG8nWQY+f+VK/LvXc9OtvX74gv2TkOSh0G7QJMBoZzC9cQTKxinJlE9WijPXYGniBRb83aMhIymRTUZPiLmOEbN4uIFOIotlRQXMkUtktRFfS2NxeBe9wgOQJ1JU4PKIJj58cx8QxBzwB3p1cbZzptLvD1Idnz0RTUnZXOJzY22FMWE/l8c3Xn6JQXIRVdKKt1kG1BZgZN7xDXrj9LGz9NNLJph1qVybz2Wrm1AsPvnZ6xn+pnllC/Pcw+oRNPLTfBdJAw24dhc0yjlslFgs/RVGT25pRFORqhmg0yiZ6d8CD+YvhhxcXpWF+QMTEURv2GAuwWGicm81DKQ2BMFvBeV2Ipq9AWnMgsaI5U1vPsoIwr9vhjSzn3rd4A6Lb6kRaqmJu7kn4LB+BUEU0lW0YDQZ0mByGfEw1lVit9bss1w9NjXxyz32BCzoBbeRHBLAMnDYKDDgEg0NIpmYwfOAwIj/GQdER9dEDluQjU6F3Dj12788apqaNau8haUnJ5eAu5yrNZ8u5EsJXkwg+MAz36D6oNRL5QRPGxqTcux88MQ1Qv2nnuzrwryDXYo2tySOONxyCel6WbubLmWyH0/wWRR6+ERaDe5sIhjy/auDYf8E6SY/qzgcya/XA+c9X3luOp54hrVaC41h0NjdyJ44HX0ynK98fOz6mY/4Vf2vR2jeWJFisnDcWzb65tLQxQ1IWcnTfwMtHpnyzOuqf0vVajz8BTUdhAt5TgxUAAAAASUVORK5CYII=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;600&family=Hahmlet:wght@400;600&family=Song+Myung&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700&family=Nanum+Pen+Script&family=Gaegu&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=EB+Garamond:ital@0;1&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* 거의 흰 바탕 + 가는 회색 선 + 라벤더 포인트. 왼쪽 패널은 탭 3개(글/글씨/종이), 오른쪽은 종이 미리보기 */
+:root{
+  --bg:#FCFCFC; --panel:#FFFFFF; --stage:#F4F4F6; --ink:#2B2B2F; --sub:#77777E; --faint:#B4B4BA; --line:#E7E7EA;
+  --accent:#6E5BD8; --accent-soft:#EFECFC; --accent-ink:#FFFFFF; --ring:#C9C2F2;
+  --ui:"Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --latin:"Poppins", "Noto Sans KR", sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141418; --panel:#1B1B20; --stage:#111114; --ink:#E9E9EE; --sub:#9C9CA6; --faint:#5E5E68; --line:#2B2B33;
+  --accent:#B3A6F5; --accent-soft:#2A2640; --accent-ink:#17142A; --ring:#4E4680; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141418; --panel:#1B1B20; --stage:#111114; --ink:#E9E9EE; --sub:#9C9CA6; --faint:#5E5E68; --line:#2B2B33;
+  --accent:#B3A6F5; --accent-soft:#2A2640; --accent-ink:#17142A; --ring:#4E4680; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.55}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line);
+  padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;align-items:center;gap:12px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand .logo{width:30px;height:30px;flex:none;border-radius:50%;object-fit:cover;background:#F3F0FD;box-shadow:0 0 0 2px var(--panel),0 0 0 3.5px var(--ring)}
+.brand b{font-weight:600;font-size:16px;letter-spacing:-.01em}
+.brand small{font-family:var(--latin);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.brand .names{display:flex;flex-direction:column;line-height:1.2}
+header .sp{flex:1}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 14px;font-size:13px;color:var(--sub)}
+.pill:hover{border-color:var(--faint);color:var(--ink)}
+.pill.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:500}
+.pill.primary:hover{filter:brightness(1.06);color:var(--accent-ink)}
+.hist{display:flex;gap:4px}
+.pill.icon{padding:5px 11px;font-size:15px;line-height:1.2}
+.pill:disabled{opacity:.4;cursor:default}
+.tool .bx{width:16px;height:12px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+.dot.sq{border-radius:5px}
+
+main{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);min-height:calc(100% - 66px)}
+.side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.tabs{display:flex;gap:4px;padding-block:14px 0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:20px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:8px 14px 12px;font-family:var(--latin);font-size:12px;letter-spacing:.14em;color:var(--faint);position:relative}
+.tabs button span{font-family:var(--ui);letter-spacing:0;font-size:13.5px;display:block;color:var(--sub)}
+.tabs button[aria-selected="true"] span{color:var(--ink);font-weight:600}
+.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:2px;background:var(--accent);border-radius:2px}
+.panel{padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:20px;display:flex;flex-direction:column;gap:22px}
+
+.stage{background:var(--stage);padding-block:32px 72px;padding-left:28px;padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:center;gap:30px;min-width:0}
+
+.f{display:flex;flex-direction:column;gap:9px;min-width:0}
+.lab{font-size:12px;color:var(--sub);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lab output{color:var(--ink);font-family:var(--latin);font-size:11.5px;font-variant-numeric:tabular-nums}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tool{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 11px;font-size:12.5px;color:var(--sub);display:inline-flex;align-items:center;gap:6px}
+.tool:hover{color:var(--ink);border-color:var(--faint)}
+.tool .mk{width:14px;height:9px;border-radius:2px;display:inline-block}
+.dot{width:20px;height:20px;border-radius:50%;border:1px solid var(--line);padding:0}
+.dot[aria-pressed="true"]{box-shadow:0 0 0 2px var(--panel),0 0 0 3.5px var(--accent)}
+.vr{width:1px;height:18px;background:var(--line);margin:0 4px}
+textarea{width:100%;min-height:340px;resize:vertical;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);
+  padding:16px;font-family:"Nanum Myeongjo",serif;font-size:15px;line-height:1.85}
+.note{font-size:12px;color:var(--faint);margin:0;padding:0;list-style:none;line-height:1.6;display:flex;flex-direction:column;gap:6px}
+.note li{padding-left:12px;position:relative}
+.note li::before{content:"";position:absolute;left:0;top:.6em;width:4px;height:4px;border-radius:50%;background:var(--ring)}
+.note code{font-family:ui-monospace,Menlo,monospace;color:var(--sub);background:var(--accent-soft);border-radius:4px;padding:0 4px}
+select,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);padding:9px 11px;font:inherit;font-size:13.5px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-size:12.5px;color:var(--sub)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--ring);color:var(--accent);font-weight:600}
+.check{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink)}
+.check input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.box h3{margin:0;font-size:12.5px;font-weight:600}
+.inline{display:flex;gap:6px}
+.inline input{flex:1}
+.hr{height:1px;background:var(--line)}
+.colors{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--sub)}
+.colors label{display:flex;align-items:center;gap:6px}
+input[type=color]{width:30px;height:26px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:2px}
+.file{font-size:12px;color:var(--sub)}
+
+.sheet{display:flex;flex-direction:column;gap:10px;width:100%;max-width:500px}
+.sheet canvas{width:100%;height:auto;display:block;box-shadow:0 1px 2px rgba(30,25,60,.06),0 10px 30px rgba(30,25,60,.07)}
+.sheet .meta{display:flex;justify-content:space-between;align-items:center;font-family:var(--latin);font-size:11px;letter-spacing:.06em;color:var(--faint)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);
+  padding:10px 18px;border-radius:999px;font-size:13px;z-index:20;max-width:calc(100% - 32px)}
+.overlay{position:fixed;inset:0;background:rgba(15,12,30,.72);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));color:#fff;text-align:center}
+.overlay img{max-height:75vh;max-width:100%}
+@media (max-width:820px){
+  main{grid-template-columns:minmax(0,1fr)}
+  .side{border-right:0;border-bottom:1px solid var(--line)}
+  .tabs,.panel{padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .stage{padding-left:max(16px,env(safe-area-inset-left,0px))}
+  .brand small{display:none}
+}
+</style>
+
+<header>
+  <div class="brand">
+    <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAA0VXHyAAADa0lEQVQ4EW1TbWhbVRh+7ldyP5Lmq0l6ky7LiGlTZ2e1ulns5ph2Ax2CwzqmCFP6xw8QBVEQfykDf7mJ+lOKP3RQQRRUJgyHaxnVbdqUJaZd0qw3ab6aj5umyc2S3HhvOvEDXzjnvO97zvPwHJ5zCPxPdLtdvUvcjNSfikcbb1WK7f00Q9T9QfaV8cm+2d4mQegLduZeujPdAeOP6/WnY2HlY5Um3WabAa1OB9tFJXdXiH11bML8VQ+skfQI1mJ1sDwplgqt59GFevf9povfflb4ApQhNBgSUKq0IJgp1AotbJXrsROnnYc1giyhEdBSXIHLw7h+mCudiy0r05p6NZtqLchFeaBaNEIut1FXCewOsGCYFiryugA46R29AG13MeKl7+SzUqIz3efgNEkEee2XxsHEjRXcWpRhsntg9TnB3LZDbiQx6KetG8nWQY+f+VK/LvXc9OtvX74gv2TkOSh0G7QJMBoZzC9cQTKxinJlE9WijPXYGniBRb83aMhIymRTUZPiLmOEbN4uIFOIotlRQXMkUtktRFfS2NxeBe9wgOQJ1JU4PKIJj58cx8QxBzwB3p1cbZzptLvD1Idnz0RTUnZXOJzY22FMWE/l8c3Xn6JQXIRVdKKt1kG1BZgZN7xDXrj9LGz9NNLJph1qVybz2Wrm1AsPvnZ6xn+pnllC/Pcw+oRNPLTfBdJAw24dhc0yjlslFgs/RVGT25pRFORqhmg0yiZ6d8CD+YvhhxcXpWF+QMTEURv2GAuwWGicm81DKQ2BMFvBeV2Ipq9AWnMgsaI5U1vPsoIwr9vhjSzn3rd4A6Lb6kRaqmJu7kn4LB+BUEU0lW0YDQZ0mByGfEw1lVit9bss1w9NjXxyz32BCzoBbeRHBLAMnDYKDDgEg0NIpmYwfOAwIj/GQdER9dEDluQjU6F3Dj12788apqaNau8haUnJ5eAu5yrNZ8u5EsJXkwg+MAz36D6oNRL5QRPGxqTcux88MQ1Qv2nnuzrwryDXYo2tySOONxyCel6WbubLmWyH0/wWRR6+ERaDe5sIhjy/auDYf8E6SY/qzgcya/XA+c9X3luOp54hrVaC41h0NjdyJ44HX0ynK98fOz6mY/4Vf2vR2jeWJFisnDcWzb65tLQxQ1IWcnTfwMtHpnyzOuqf0vVajz8BTUdhAt5TgxUAAAAASUVORK5CYII=" alt="" width="30" height="30">
+    <div class="names"><b>글로그 메이커</b><small>glolog maker</small></div>
+  </div>
+  <div class="sp"></div>
+  <div class="hist">
+    <button class="pill icon" id="undoBtn" type="button" aria-label="되돌리기">↶</button>
+    <button class="pill icon" id="redoBtn" type="button" aria-label="다시 하기">↷</button>
+  </div>
+  <button class="pill" id="reset" type="button">설정 초기화</button>
+  <button class="pill primary" id="saveAll" type="button">이미지 저장</button>
+</header>
+
+<main>
+  <aside class="side">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="t-text" aria-controls="p-text" aria-selected="true">TEXT<span>글</span></button>
+      <button type="button" role="tab" id="t-type" aria-controls="p-type" aria-selected="false">TYPE<span>글씨</span></button>
+      <button type="button" role="tab" id="t-page" aria-controls="p-page" aria-selected="false">PAGE<span>종이</span></button>
+    </div>
+
+    <!-- 글 -->
+    <div class="panel" id="p-text" role="tabpanel" aria-labelledby="t-text">
+      <div class="f">
+        <div class="tools" aria-label="꾸미기">
+          <button type="button" class="tool" id="hlBtn"><span class="mk" id="hlMk"></span>형광펜</button>
+          <div class="seg" id="hlColors" style="gap:5px"></div>
+        </div>
+        <div class="tools">
+          <button type="button" class="tool" id="boxBtn"><span class="bx" id="bxMk"></span>박스</button>
+          <div class="seg" id="boxColors" style="gap:5px"></div>
+        </div>
+        <div class="tools">
+          <button type="button" class="tool" id="hlClear">꾸밈 지우기</button>
+          <span class="vr"></span>
+          <button type="button" class="tool" id="grayBtn">연한 글씨</button>
+          <button type="button" class="tool" id="brkBtn">다음 장</button>
+        </div>
+        <textarea id="text" spellcheck="false" aria-label="글"></textarea>
+        <ul class="note">
+          <li>글자를 드래그하고 <b>형광펜</b>을 누르면 <code>==이렇게==</code> 표시돼요</li>
+          <li>글자를 드래그하고 <b>박스</b>를 누르면 <code>[[이렇게]]</code> 표시돼요</li>
+          <li>줄을 고르고 <b>연한 글씨</b>를 누르면 맨 앞에 <code>~</code>가 붙어요</li>
+          <li>빈 줄은 한 줄 띄우기, 넘치는 글은 다음 장으로 자동으로 넘어가요</li>
+          <li>되돌리기 <code>Ctrl+Z</code> (맥 <code>⌘Z</code>)</li>
+          <li>다시 하기 <code>Ctrl+Shift+Z</code> (맥 <code>⌘⇧Z</code>)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 글씨 -->
+    <div class="panel" id="p-type" role="tabpanel" aria-labelledby="t-type" hidden>
+      <div class="f">
+        <span class="lab">본문 글꼴</span>
+        <select id="font" data-k="font" aria-label="본문 글꼴"></select>
+      </div>
+      <div class="two">
+        <div class="f"><span class="lab">글자 크기 <output id="o-size"></output></span><input type="range" id="size" data-k="size" min="18" max="56" step="1" aria-label="글자 크기"></div>
+        <div class="f"><span class="lab">줄 간격 <output id="o-lh"></output></span><input type="range" id="lh" data-k="lh" min="1.2" max="2.6" step="0.05" aria-label="줄 간격"></div>
+        <div class="f"><span class="lab">자간 <output id="o-track"></output></span><input type="range" id="track" data-k="track" min="-0.1" max="0.12" step="0.01" aria-label="자간"></div>
+        <div class="f"><span class="lab">굵기</span><div class="seg" data-k="weight"><button type="button" data-v="400">보통</button><button type="button" data-v="700">굵게</button></div></div>
+      </div>
+      <div class="f"><span class="lab">정렬</span>
+        <div class="seg" data-k="align"><button type="button" data-v="justify">양쪽 맞춤</button><button type="button" data-v="left">왼쪽</button><button type="button" data-v="center">가운데</button></div></div>
+      <label class="check"><input type="checkbox" id="indent" data-k="indent"> 문단 첫 줄 들여쓰기</label>
+      <label class="check"><input type="checkbox" id="keepAll" data-k="keepAll"> 단어 단위로 줄 바꾸기</label>
+      <div class="hr"></div>
+      <div class="f">
+        <span class="lab">연한 글씨 글꼴</span>
+        <select id="grayFont" data-k="grayFont" aria-label="연한 글씨 글꼴"></select>
+      </div>
+    </div>
+
+    <!-- 종이 -->
+    <div class="panel" id="p-page" role="tabpanel" aria-labelledby="t-page" hidden>
+      <div class="f"><span class="lab">비율</span>
+        <div class="seg" data-k="ratio"><button type="button" data-v="1.4142">책 한 쪽</button><button type="button" data-v="1.25">4:5</button><button type="button" data-v="1.3333">3:4</button><button type="button" data-v="1.7778">9:16</button><button type="button" data-v="1">1:1</button></div></div>
+      <div class="f"><span class="lab">글 위치</span>
+        <div class="seg" data-k="valign"><button type="button" data-v="top">위에서부터</button><button type="button" data-v="middle">세로 가운데</button></div></div>
+      <div class="two">
+        <div class="f"><span class="lab">좌우 여백 <output id="o-ms"></output></span><input type="range" id="ms" data-k="ms" min="60" max="260" step="2" aria-label="좌우 여백"></div>
+        <div class="f"><span class="lab">위 여백 <output id="o-mt"></output></span><input type="range" id="mt" data-k="mt" min="60" max="500" step="4" aria-label="위 여백"></div>
+      </div>
+      <div class="f"><span class="lab">종이 색</span><div class="seg" id="papers"></div></div>
+      <div class="colors">
+        <label>글자 <input type="color" id="fg" data-k="fg"></label>
+        <label>연한 글씨 <input type="color" id="gray" data-k="gray"></label>
+        <label>종이 <input type="color" id="bg" data-k="bg"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="pageNo" data-k="pageNo"> 아래에 쪽 번호 넣기</label>
+      <div class="f"><span class="lab">저장 크기 (가로)</span>
+        <div class="seg" data-k="scale"><button type="button" data-v="1">1080px</button><button type="button" data-v="2">2160px 선명하게</button></div></div>
+    </div>
+  </aside>
+
+  <section class="stage" aria-label="미리보기" id="pages"></section>
+</main>
+
+<script>
+(() => {
+const W = 1080;
+const WEB_FONTS = [
+  {v:'Nanum Myeongjo', t:'나눔명조'}, {v:'Gowun Batang', t:'고운바탕'}, {v:'Noto Serif KR', t:'본명조'},
+  {v:'Hahmlet', t:'함렛'}, {v:'Song Myung', t:'송명'}, {v:'Noto Sans KR', t:'본고딕'},
+  {v:'Gowun Dodum', t:'고운돋움'}, {v:'Nanum Gothic', t:'나눔고딕'}, {v:'Nanum Pen Script', t:'나눔손글씨 펜'}, {v:'Gaegu', t:'개구'},
+];
+const GRAY_FONTS = [{v:'Cormorant Garamond', t:'코모런트 (영문 명조)'}, {v:'EB Garamond', t:'가라몬드 (영문 명조)'}, {v:'', t:'본문과 같게'}];
+// 컴퓨터에 깔려 있을 만한 한글 글꼴 (있는 것만 목록에 보여줌)
+const LOCAL_CANDIDATES = [
+  ['함초롬바탕','함초롬바탕'],['HCR Batang','함초롬바탕'],['함초롬돋움','함초롬돋움'],['HCR Dotum','함초롬돋움'],
+  ['한컴바탕','한컴바탕'],['Hancom Batang','한컴바탕'],['HYSinMyeongJo-Medium','HY신명조'],['HY신명조','HY신명조'],
+  ['AppleMyungjo','애플명조'],['AppleGothic','애플고딕'],['Apple SD Gothic Neo','애플 SD 산돌고딕 Neo'],
+  ['Batang','바탕'],['바탕','바탕'],['Gungsuh','궁서'],['궁서','궁서'],['Gulim','굴림'],['굴림','굴림'],['Dotum','돋움'],['Malgun Gothic','맑은 고딕'],
+  ['KoPubWorldBatang','KoPub 바탕'],['KoPubWorld바탕체 Medium','KoPub 바탕'],['KoPubBatang','KoPub 바탕'],['RIDIBatang','리디바탕'],
+  ['Chosunilbo_myungjo','조선일보명조'],['MaruBuri','마루부리'],['Pretendard','프리텐다드'],['Spoqa Han Sans Neo','스포카 한 산스'],
+  ['NanumMyeongjo','나눔명조 (컴퓨터)'],['NanumBarunGothic','나눔바른고딕'],['Nanum Brush Script','나눔손글씨 붓'],
+  ['Noto Serif CJK KR','Noto Serif CJK KR'],['Source Han Serif K','본명조 (컴퓨터)'],['BM YEONSUNG','배민 연성'],['BM JUA','배민 주아'],
+];
+const PAPERS = [
+  {bg:'#FFFFFF', fg:'#1F1F1F', gray:'#9B9B9B', t:'흰 종이'},
+  {bg:'#FBF8F1', fg:'#2A2622', gray:'#A39C90', t:'미색'},
+  {bg:'#F6F5FB', fg:'#26243A', gray:'#A29FBA', t:'연보라'},
+  {bg:'#1A1A1C', fg:'#ECECEC', gray:'#7C7C80', t:'검정'},
+];
+const HL_COLORS = [
+  {c:'#FFF27A', t:'노랑'}, {c:'#FFC6DA', t:'분홍'}, {c:'#D8CFFF', t:'라벤더'}, {c:'#BFF0DA', t:'민트'}, {c:'#C9E6FF', t:'하늘'},
+];
+const BOX_COLORS = [
+  {c:'#EDEDED', t:'연회색'}, {c:'#E6E0FF', t:'연보라'}, {c:'#FFF3B0', t:'연노랑'}, {c:'#FFE0EA', t:'연분홍'}, {c:'#2B2B2F', t:'검정'}, {c:'#6E5BD8', t:'보라'},
+];
+const SAMPLE = `내를 건너서 숲으로
+고개를 넘어서 마을로
+
+어제도 가고 오늘도 갈
+나의 길 [[새로운 길]]
+
+민들레가 피고 까치가 날고
+아가씨가 지나고 바람이 일고
+
+==나의 길은 언제나 새로운 길==
+오늘도…… 내일도……
+
+내를 건너서 숲으로
+고개를 넘어서 마을로
+
+
+
+~ 윤동주, 「새로운 길」`;
+const DEF = {text:SAMPLE, font:'Nanum Myeongjo', grayFont:'Cormorant Garamond', size:30, lh:1.7, track:0, weight:'400',
+  align:'justify', indent:true, keepAll:false, ratio:'1.4142', valign:'top', ms:140, mt:220,
+  bg:'#FFFFFF', fg:'#1F1F1F', gray:'#9B9B9B', pageNo:false, scale:'2', hl:'#FFF27A', box:'#EDEDED', myFonts:[]};
+const KEY = 'glolog-maker-v7';
+let S = {...DEF};
+try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) S = {...DEF, ...saved}; } catch(e){}
+const fileFonts = [];
+let detected = [];
+
+const $ = id => document.getElementById(id);
+const textEl = $('text');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- 탭 ---------- */
+const tabs = [...document.querySelectorAll('[role=tab]')];
+function openTab(t){
+  tabs.forEach(b => { const on = b === t; b.setAttribute('aria-selected', String(on)); $(b.getAttribute('aria-controls')).hidden = !on; });
+  try { localStorage.setItem(KEY + '-tab', t.id); } catch(e){}
+}
+tabs.forEach(b => b.addEventListener('click', () => openTab(b)));
+try { const t = localStorage.getItem(KEY + '-tab'); if (t && $(t)) openTab($(t)); } catch(e){}
+
+/* ---------- 글꼴 목록 ---------- */
+function opts(list){ return list.map(f => `<option value="${esc(f.v)}">${esc(f.t)}</option>`).join(''); }
+function buildSelects(){
+  const mine = [...detected, ...S.myFonts.filter(n => !detected.some(d => d.v === n)).map(n => ({v:n, t:n})), ...fileFonts];
+  const mineGroup = mine.length ? `<optgroup label="내 컴퓨터 글꼴">${opts(mine)}</optgroup>` : '';
+  $('font').innerHTML = `<optgroup label="기본 글꼴">${opts(WEB_FONTS)}</optgroup>${mineGroup}`;
+  $('grayFont').innerHTML = `<optgroup label="영문">${opts(GRAY_FONTS)}</optgroup><optgroup label="기본 글꼴">${opts(WEB_FONTS)}</optgroup>${mineGroup}`;
+  if (![...$('font').options].some(o => o.value === S.font)) $('font').insertAdjacentHTML('beforeend', `<option value="${esc(S.font)}">${esc(S.font)}</option>`);
+  $('font').value = S.font; $('grayFont').value = S.grayFont;
+}
+// 설치 여부: 기본 글꼴로 그렸을 때와 폭이 다르면 깔려 있는 것
+const probe = document.createElement('canvas').getContext('2d');
+const PROBE_TXT = '가나다라마바사 한글 글꼴 Abg 123';
+function installed(name){
+  return ['monospace', 'serif', 'sans-serif'].every(base => {
+    probe.font = `72px ${base}`; const a = probe.measureText(PROBE_TXT).width;
+    probe.font = `72px "${name}", ${base}`; const b = probe.measureText(PROBE_TXT).width;
+    return Math.abs(a - b) > 0.5;
+  });
+}
+function detectLocal(){
+  const seen = new Set();
+  detected = [];
+  for (const [name, label] of LOCAL_CANDIDATES){
+    if (seen.has(label)) continue;
+    if (installed(name)){ detected.push({v:name, t:label}); seen.add(label); }
+  }
+  buildSelects();
+}
+
+/* ---------- 설정 ---------- */
+$('papers').innerHTML = PAPERS.map((p, i) => `<button type="button" data-i="${i}"><span class="dot" style="display:inline-block;width:11px;height:11px;vertical-align:-1px;margin-right:6px;background:${p.bg}"></span>${p.t}</button>`).join('');
+$('hlColors').innerHTML = HL_COLORS.map(h => `<button type="button" class="dot" data-c="${h.c}" title="${h.t}" aria-label="형광펜 ${h.t}" style="background:${h.c}"></button>`).join('');
+$('boxColors').innerHTML = BOX_COLORS.map(h => `<button type="button" class="dot sq" data-c="${h.c}" title="${h.t}" aria-label="박스 ${h.t}" style="background:${h.c}"></button>`).join('');
+function syncUI(){
+  if (textEl.value !== S.text) textEl.value = S.text;
+  document.querySelectorAll('[data-k]').forEach(el => {
+    const k = el.dataset.k;
+    if (el.classList.contains('seg')) el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(S[k]))));
+    else if (el.type === 'checkbox') el.checked = !!S[k];
+    else el.value = S[k];
+  });
+  document.querySelectorAll('#papers button').forEach(b => b.setAttribute('aria-pressed', String(PAPERS[b.dataset.i].bg.toLowerCase() === S.bg.toLowerCase())));
+  document.querySelectorAll('#hlColors .dot').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === S.hl)));
+  $('hlMk').style.background = S.hl;
+  document.querySelectorAll('#boxColors .dot').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === S.box)));
+  $('bxMk').style.background = S.box;
+  $('o-size').textContent = S.size + 'px';
+  $('o-lh').textContent = Number(S.lh).toFixed(2);
+  $('o-track').textContent = (S.track > 0 ? '+' : '') + Number(S.track).toFixed(2);
+  $('o-ms').textContent = S.ms + 'px';
+  $('o-mt').textContent = S.mt + 'px';
+}
+function persist(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} record(); }
+
+/* ---------- 되돌리기 / 다시 하기 ---------- */
+let hist = [JSON.stringify(S)], hi = 0, ht = 0;
+function record(){ clearTimeout(ht); ht = setTimeout(commit, 450); }
+function commit(){
+  clearTimeout(ht);
+  const s = JSON.stringify(S);
+  if (s !== hist[hi]){ hist = hist.slice(0, hi + 1); hist.push(s); if (hist.length > 300) hist.shift(); hi = hist.length - 1; }
+  histBtns();
+}
+function restore(){ S = JSON.parse(hist[hi]); buildSelects(); syncUI(); try { localStorage.setItem(KEY, hist[hi]); } catch(e){} schedule(); histBtns(); }
+function undo(){ commit(); if (hi > 0){ hi--; restore(); } else toast('더 되돌릴 게 없어요'); }
+function redo(){ commit(); if (hi < hist.length - 1){ hi++; restore(); } else toast('다시 할 게 없어요'); }
+function histBtns(){ $('undoBtn').disabled = hi === 0 && JSON.stringify(S) === hist[0]; $('redoBtn').disabled = hi >= hist.length - 1; }
+const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+$('undoBtn').title = isMac ? '되돌리기 (⌘Z)' : '되돌리기 (Ctrl+Z)';
+$('redoBtn').title = isMac ? '다시 하기 (⌘⇧Z)' : '다시 하기 (Ctrl+Shift+Z)';
+$('undoBtn').addEventListener('click', undo);
+$('redoBtn').addEventListener('click', redo);
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if (k === 'y' && e.ctrlKey){ e.preventDefault(); redo(); }
+}, true);
+function set(k, v){ S[k] = v; syncUI(); persist(); schedule(); }
+textEl.addEventListener('input', () => { S.text = textEl.value; persist(); schedule(); });
+document.querySelectorAll('[data-k]').forEach(el => {
+  const k = el.dataset.k;
+  if (el.classList.contains('seg')) el.addEventListener('click', e => { const b = e.target.closest('button'); if (b) set(k, b.dataset.v); });
+  else if (el.type === 'checkbox') el.addEventListener('change', () => set(k, el.checked));
+  else if (el.type === 'range') el.addEventListener('input', () => set(k, Number(el.value)));
+  else el.addEventListener('input', () => set(k, el.value));
+});
+$('papers').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const p = PAPERS[b.dataset.i]; S.bg = p.bg; S.fg = p.fg; S.gray = p.gray; syncUI(); persist(); schedule(); });
+$('hlColors').addEventListener('click', e => { const b = e.target.closest('.dot'); if (b) set('hl', b.dataset.c); });
+$('boxColors').addEventListener('click', e => { const b = e.target.closest('.dot'); if (b) set('box', b.dataset.c); });
+$('reset').addEventListener('click', () => { S = {...DEF, text:S.text, myFonts:S.myFonts}; syncUI(); buildSelects(); persist(); schedule(); toast('설정을 처음으로 돌렸어요 (글은 그대로예요)'); });
+
+/* ---------- 글 꾸미기 도구 ---------- */
+function editText(fn){
+  const a = textEl.selectionStart, b = textEl.selectionEnd, v = textEl.value;
+  const r = fn(v, a, b); if (!r) return;
+  textEl.value = r.v; textEl.focus(); textEl.setSelectionRange(r.a, r.b);
+  S.text = r.v; persist(); schedule();
+}
+function wrapSel(open, close, strip, what){
+  return () => editText((v, a, b) => {
+    if (a === b){ toast(`${what}을(를) 칠할 글자를 먼저 드래그해 주세요`); return null; }
+    const sel = v.slice(a, b).replace(strip, '');
+    const wrapped = sel.split('\n').map(s => s.trim() ? s.replace(/^(\s*)(.*?)(\s*)$/, `$1${open}$2${close}$3`) : s).join('\n');
+    return {v: v.slice(0, a) + wrapped + v.slice(b), a, b: a + wrapped.length};
+  });
+}
+$('hlBtn').addEventListener('click', wrapSel('==', '==', /==/g, '형광펜'));
+$('boxBtn').addEventListener('click', wrapSel('[[', ']]', /\[\[|\]\]/g, '박스'));
+const MARKS = /==|\[\[|\]\]/g;
+$('hlClear').addEventListener('click', () => editText((v, a, b) => {
+  if (a === b){ const nv = v.replace(MARKS, ''); toast('형광펜과 박스를 모두 지웠어요'); return {v:nv, a:0, b:0}; }
+  const ls = v.lastIndexOf('\n', a - 1) + 1, le = v.indexOf('\n', b); const end = le < 0 ? v.length : le;
+  const part = v.slice(ls, end).replace(MARKS, '');
+  return {v: v.slice(0, ls) + part + v.slice(end), a: ls, b: ls + part.length};
+}));
+$('grayBtn').addEventListener('click', () => editText((v, a, b) => {
+  const ls = v.lastIndexOf('\n', a - 1) + 1, le = v.indexOf('\n', Math.max(a, b - 1)); const end = le < 0 ? v.length : le;
+  const lines = v.slice(ls, end).split('\n');
+  const allGray = lines.every(l => !l.trim() || l.startsWith('~'));
+  const part = lines.map(l => !l.trim() ? l : allGray ? l.replace(/^~\s?/, '') : (l.startsWith('~') ? l : '~ ' + l)).join('\n');
+  return {v: v.slice(0, ls) + part + v.slice(end), a: ls, b: ls + part.length};
+}));
+$('brkBtn').addEventListener('click', () => editText((v, a) => {
+  const ins = (a > 0 && v[a - 1] !== '\n' ? '\n' : '') + '---\n';
+  return {v: v.slice(0, a) + ins + v.slice(a), a: a + ins.length, b: a + ins.length};
+}));
+
+/* ---------- 조판 ---------- */
+const NO_START = /^[.,!?)\]}」』〉》’”:;·、。…%~\-—'"]/;
+const NO_END = /[(\[{「『〈《‘“]$/;
+const wcache = new Map();
+const ctx0 = document.createElement('canvas').getContext('2d');
+function fontStr(fam, px){ return `${S.weight} ${px}px "${fam}", "Nanum Myeongjo", serif`; }
+function cw(font, ch){ const k = font + '|' + ch; let w = wcache.get(k); if (w === undefined){ ctx0.font = font; w = ctx0.measureText(ch).width; wcache.set(k, w); } return w; }
+function tokenize(str, keepAll){ return str.match(keepAll ? /\s+|\S+/g : /\s+|[A-Za-z0-9À-ɏ'’]+|[\s\S]/gu) || []; }
+function measure(font, g, tr){ let w = 0; for (const c of g) w += cw(font, c) + tr; return w; }
+// 박스 양 끝에 여유 공간: 박스가 시작하거나 끝나는 글자에 붙임
+const BOX_PAD = 0.22;
+function boxPad(hl, k, px){ const on = hl[k] & 2; if (!on) return 0; return ((hl[k - 1] & 2) ? 0 : px * BOX_PAD) + ((hl[k + 1] & 2) ? 0 : px * BOX_PAD); }
+// 글자마다 꾸밈 표시: 1 = 형광펜, 2 = 박스
+function parseHL(raw){
+  let clean = '', h = false, bx = false; const hl = [];
+  for (let i = 0; i < raw.length;){
+    const two = raw.substr(i, 2);
+    if (two === '=='){ h = !h; i += 2; continue; }
+    if (two === '[['){ bx = true; i += 2; continue; }
+    if (two === ']]'){ bx = false; i += 2; continue; }
+    const ch = String.fromCodePoint(raw.codePointAt(i));
+    clean += ch; hl.push((h ? 1 : 0) | (bx ? 2 : 0)); i += ch.length;
+  }
+  return {clean, hl};
+}
+function darkColor(hex){ const n = parseInt(hex.slice(1), 16); const r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (0.299 * r + 0.587 * g + 0.114 * b) < 140; }
+
+function layout(){
+  const px = S.size, tr = S.track * px, maxW = W - S.ms * 2, indentW = S.indent ? px : 0;
+  const lines = [];
+  for (let raw of S.text.replace(/\r/g, '').split('\n')){
+    if (/^\s*(---|===)\s*$/.test(raw)){ lines.push({brk:true}); continue; }
+    let gray = false;
+    if (raw.startsWith('~')){ gray = true; raw = raw.replace(/^~\s?/, ''); }
+    const {clean, hl} = parseHL(raw);
+    const fam = gray && S.grayFont ? S.grayFont : S.font;
+    const font = fontStr(fam, px);
+    if (clean.trim() === ''){ lines.push({empty:true}); continue; }
+    const ind = S.align === 'center' ? 0 : indentW;
+    let toks = [], ci = 0;
+    for (const g of tokenize(clean, S.keepAll)){
+      const chars = Array.from(g);
+      if (!/^\s+$/.test(g) && measure(font, g, tr) > maxW - ind) chars.forEach(c => { toks.push({g:c, i:ci}); ci++; });
+      else { toks.push({g, i:ci}); ci += chars.length; }
+    }
+    let cur = [], curW = 0, first = true;
+    const avail = () => maxW - (first ? ind : 0);
+    const flush = (last) => {
+      while (cur.length && cur[cur.length - 1].sp) curW -= cur.pop().w;
+      lines.push({items:cur, w:curW, indent:first ? ind : 0, last, gray, font, hl, avail:avail()});
+      first = false; cur = []; curW = 0;
+    };
+    for (const {g, i} of toks){
+      const sp = /^\s+$/.test(g);
+      let w = sp ? cw(font, ' ') * g.length : measure(font, g, tr);
+      if (!sp){ let k = 0; for (const _ of g){ w += boxPad(hl, i + k, px); k++; } }
+      const it = {t:g, w, sp, i};
+      if (sp){ if (cur.length){ cur.push(it); curW += w; } continue; }
+      if (!cur.length || curW + w <= avail() + 0.5){ cur.push(it); curW += w; continue; }
+      if (NO_START.test(g) && Array.from(g).length <= 2){ cur.push(it); curW += w; continue; }
+      const carry = [];
+      while (cur.length > 1 && !cur[cur.length - 1].sp && NO_END.test(cur[cur.length - 1].t)){ const x = cur.pop(); curW -= x.w; carry.unshift(x); }
+      flush(false);
+      for (const x of carry){ cur.push(x); curW += x.w; }
+      cur.push(it); curW += w;
+    }
+    flush(true);
+  }
+  return lines;
+}
+function paginate(lines){
+  const px = S.size, lineH = px * S.lh, H = Math.round(W * Number(S.ratio));
+  const bottom = Math.max(S.mt * 0.8, 140) + (S.pageNo ? 30 : 0);
+  const per = Math.max(1, Math.floor((H - S.mt - bottom + (lineH - px)) / lineH));
+  const pages = [[]];
+  for (const ln of lines){
+    let p = pages[pages.length - 1];
+    if (ln.brk){ pages.push([]); continue; }
+    if (p.length >= per){ pages.push([]); p = pages[pages.length - 1]; if (ln.empty) continue; }
+    p.push(ln);
+  }
+  pages.forEach(p => { while (p.length && p[p.length - 1].empty) p.pop(); });
+  const out = pages.filter((p, i) => p.length || i === 0);
+  return {pages: out.length ? out : [[]], H, lineH};
+}
+function drawPage(cv, lines, info, idx, scale){
+  const {H, lineH} = info, px = S.size, tr = S.track * px;
+  cv.width = W * scale; cv.height = H * scale;
+  const c = cv.getContext('2d');
+  c.setTransform(scale, 0, 0, scale, 0, 0);
+  c.fillStyle = S.bg; c.fillRect(0, 0, W, H);
+  c.textBaseline = 'middle';
+  const blockH = lines.length * lineH;
+  let y = S.valign === 'middle' ? Math.max(S.mt * 0.6, (H - blockH) / 2) : S.mt;
+  for (const ln of lines){
+    if (ln.empty || !ln.items){ y += lineH; continue; }
+    c.font = ln.font;
+    const extra = ln.avail - ln.w;
+    const spaces = ln.items.filter(i => i.sp).length;
+    const chars = ln.items.reduce((n, i) => n + (i.sp ? 0 : Array.from(i.t).length), 0);
+    let spAdd = 0, chAdd = 0, x = S.ms + ln.indent;
+    if (S.align === 'justify' && !ln.last && !ln.gray){
+      if (extra < 0){ if (spaces) spAdd = Math.max(extra / spaces, -cw(ln.font, ' ') * 0.45); }
+      else if (spaces && extra / spaces <= px * 0.6) spAdd = extra / spaces;
+      else { spAdd = spaces ? px * 0.6 : 0; const rest = extra - spAdd * spaces; chAdd = chars > 1 ? rest / (chars - 1) : 0; }
+    } else if (S.align === 'center') x = S.ms + (ln.avail - ln.w) / 2;
+    // 글자 자리 먼저 계산
+    const glyphs = []; let n = 0;
+    for (const it of ln.items){
+      if (it.sp){ const w = it.w + spAdd; glyphs.push({x, w, m: (ln.hl[it.i] || 0) & (ln.hl[it.i - 1] || 0)}); x += w; continue; }
+      let k = 0;
+      for (const ch of it.t){
+        n++; const j = it.i + k, m = ln.hl[j] || 0;
+        if ((m & 2) && !(ln.hl[j - 1] & 2)) x += px * BOX_PAD;
+        const adv = cw(ln.font, ch) + tr + (n < chars ? chAdd : 0);
+        glyphs.push({ch, x, w: cw(ln.font, ch), adv, m}); x += adv; k++;
+        if ((m & 2) && !(ln.hl[j + 1] & 2)) x += px * BOX_PAD;
+      }
+    }
+    const cy = y + lineH / 2;
+    // 연속된 칸을 한 덩어리로 칠함 (bit 2 = 박스, bit 1 = 형광펜)
+    const runs = (bit, paint) => {
+      let run = null;
+      const end = () => { if (run){ paint(run.x0, run.x1); run = null; } };
+      for (const g of glyphs){ if (g.m & bit){ if (!run) run = {x0: g.x, x1: g.x + g.w}; else run.x1 = g.x + g.w; } else end(); }
+      end();
+    };
+    c.fillStyle = S.box;
+    runs(2, (x0, x1) => {
+      const pad = px * BOX_PAD, top = cy - px * 0.62, h = px * 1.2, r = px * 0.14;
+      c.beginPath();
+      if (c.roundRect) c.roundRect(x0 - pad, top, x1 - x0 + pad * 2, h, r); else c.rect(x0 - pad, top, x1 - x0 + pad * 2, h);
+      c.fill();
+    });
+    c.fillStyle = S.hl; c.globalAlpha = darkColor(S.bg) ? 0.45 : 0.85;
+    runs(1, (x0, x1) => { const pad = px * 0.08; c.fillRect(x0 - pad, cy - px * 0.3, x1 - x0 + pad * 2, px * 0.78); });
+    c.globalAlpha = 1;
+    const base = ln.gray ? S.gray : S.fg, onBox = darkColor(S.box) ? '#FFFFFF' : (darkColor(S.bg) ? '#1F1F1F' : base);
+    for (const g of glyphs) if (g.ch){ c.fillStyle = (g.m & 2) ? onBox : base; c.fillText(g.ch, g.x, cy); }
+    y += lineH;
+  }
+  if (S.pageNo){
+    c.font = fontStr(S.font, Math.round(px * 0.7)); c.fillStyle = S.gray; c.textAlign = 'center';
+    c.fillText(String(idx + 1), W / 2, H - Math.max(S.mt * 0.8, 140) / 2); c.textAlign = 'left';
+  }
+}
+
+/* ---------- 미리보기 ---------- */
+const pagesEl = $('pages');
+let sheets = [], raf = 0, lastInfo = null, fontKey = '';
+function schedule(){ cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }
+async function ensureFonts(){
+  const txt = S.text.slice(0, 4000) + '가나다abc';
+  try { await Promise.all([S.font, S.grayFont].filter(Boolean).map(f => document.fonts.load(fontStr(f, S.size), txt))); } catch(e){}
+}
+async function render(){
+  const k = S.font + S.grayFont + S.weight + S.text.length;
+  if (k !== fontKey){ fontKey = k; await ensureFonts(); wcache.clear(); }
+  const info = paginate(layout()); lastInfo = info;
+  const total = info.pages.length;
+  while (sheets.length < total){
+    const wrap = document.createElement('div'); wrap.className = 'sheet';
+    const cv = document.createElement('canvas'); cv.setAttribute('role', 'img');
+    const meta = document.createElement('div'); meta.className = 'meta';
+    meta.innerHTML = '<span></span><button class="pill" type="button">이 장만 저장</button>';
+    const i = sheets.length; meta.querySelector('button').addEventListener('click', () => savePages([i]));
+    wrap.append(cv, meta); pagesEl.append(wrap); sheets.push({wrap, cv, meta});
+  }
+  while (sheets.length > total) sheets.pop().wrap.remove();
+  const sc = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+  info.pages.forEach((p, i) => {
+    drawPage(sheets[i].cv, p, info, i, sc);
+    sheets[i].cv.setAttribute('aria-label', `${i + 1}번째 장 미리보기`);
+    sheets[i].meta.querySelector('span').textContent = `PAGE ${i + 1} / ${total} · ${W * S.scale}×${info.H * S.scale}`;
+  });
+  $('saveAll').textContent = total > 1 ? `이미지 저장 (${total}장)` : '이미지 저장';
+}
+document.fonts && document.fonts.addEventListener('loadingdone', () => { wcache.clear(); schedule(); });
+
+/* ---------- 저장 ---------- */
+let downloads = null;
+const inClaude = !!(window.claude && window.claude.use);
+if (inClaude) window.claude.use('downloads').then(d => { downloads = d; }).catch(() => {});
+function stamp(){ const d = new Date(); return String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); }
+function exportBlob(i){
+  return new Promise(res => { const cv = document.createElement('canvas'); drawPage(cv, lastInfo.pages[i], lastInfo, i, Number(S.scale)); cv.toBlob(b => res({blob:b, cv}), 'image/png'); });
+}
+async function deliver(filename, blob, cv){
+  if (downloads){
+    try { await downloads.save({filename, data:blob}); toast('저장했어요'); return; }
+    catch(err){ if (err && err.code === 'declined'){ toast('저장을 취소했어요'); return; } if (err && err.code === 'rate_limited'){ toast('저장 창이 이미 열려 있어요. 잠시 후 다시 눌러 주세요'); return; } }
+  }
+  if (!inClaude){
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('저장했어요'); return;
+  }
+  if (cv) showOverlay(cv.toDataURL('image/png')); else toast('이 화면에서는 파일 저장이 안 돼요. 한 장씩 저장해 주세요');
+}
+async function savePages(idx){
+  await render();
+  if (idx.length === 1){ const {blob, cv} = await exportBlob(idx[0]); return deliver(`글로그_${stamp()}_${idx[0] + 1}.png`, blob, cv); }
+  if (!window.JSZip){ for (const i of idx){ const {blob, cv} = await exportBlob(i); await deliver(`글로그_${stamp()}_${i + 1}.png`, blob, cv); } return; }
+  const zip = new JSZip();
+  for (const i of idx){ const {blob} = await exportBlob(i); zip.file(`글로그_${stamp()}_${i + 1}.png`, blob); }
+  deliver(`글로그_${stamp()}.zip`, await zip.generateAsync({type:'blob'}), null);
+}
+$('saveAll').addEventListener('click', () => savePages(lastInfo.pages.map((_, i) => i)));
+function showOverlay(src){
+  const o = document.createElement('div'); o.className = 'overlay';
+  o.innerHTML = '<img alt="저장할 이미지"><p>이미지를 길게 누르거나 오른쪽 클릭해서 저장하세요</p><button class="pill" type="button">닫기</button>';
+  o.querySelector('img').src = src; o.querySelector('button').onclick = () => o.remove(); document.body.append(o);
+}
+let tt;
+function toast(msg){
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.append(t);
+  clearTimeout(tt); tt = setTimeout(() => t.remove(), 2800);
+}
+
+buildSelects();
+syncUI();
+render();
+histBtns();
+detectLocal();
+document.fonts && document.fonts.ready.then(() => detectLocal());
+})();
+</script>
+
+</body>
+</html>
